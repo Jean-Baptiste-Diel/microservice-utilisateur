@@ -1,0 +1,8 @@
+# Core
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg2-binary
+bcrypt
+SQLAlchemy
+alembic
