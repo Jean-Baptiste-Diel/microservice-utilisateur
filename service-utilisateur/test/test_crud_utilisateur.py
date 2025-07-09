@@ -19,9 +19,9 @@ class TestUtilisateurRoutes(unittest.TestCase):
         test_data = {
             "nom": "INANG",
             "prenom": "Diel",
-            "email": "jean@gmail.com",
+            "email": "jean1@gmail.com",
             "mot_de_passe": "diel123",
-            "role_id": 1
+            "role_id": 3
         }
 
         # Envoi de la requête

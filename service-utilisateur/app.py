@@ -1,3 +1,5 @@
+from services.crud_livreur import creation_livreur
+from services.crud_manageur import creation_manageur
 from services.crud_utilisateur import *
 from services.authentification import *
 from flask import Flask
@@ -38,6 +40,15 @@ def creation_app():
     def deconnexion_route():
         deconnexion_utilisateur = deconnexion()
         return deconnexion_utilisateur
+
+    @app.route('/creation-manageur', methods=["POST"])
+    def creation_manageur_route():
+        creation_utilisateur_mangeur = creation_manageur()
+        return creation_utilisateur_mangeur
+    @app.route('/creation-livreur/<int:manageur_id>', methods=["POST"])
+    def creation_livreur_route(manageur_id):
+        creation_utilisateur_livreur = creation_livreur(manageur_id)
+        return creation_utilisateur_livreur
 
     return app
 app = creation_app()
