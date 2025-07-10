@@ -1,6 +1,10 @@
 
 import unittest
 import json
+import uuid
+
+from flask_jwt_extended import create_access_token
+
 from app import creation_app
 from models import db, Utilisateur, Role, Manageur, Livreur
 import bcrypt
@@ -15,25 +19,44 @@ class TestLivreurEndpoints(unittest.TestCase):
         self.client = self.app.test_client()
 
     def test_creation_utilisateur_livreur(self):
+        # 1. Préparation des données de test
         test_data = {
             "nom": "livreur",
             "prenom": "Diel",
-            "email": "liveur3_test@gmail.com",  # Changé pour être unique
+            "email": "livreur_test_4@gmail.com".format(uuid.uuid4().hex[:8]),  # Email unique
             "mot_de_passe": "diel123",
-            "role_id": 4
+            "role_id": 4  # ID du rôle livreur
         }
-        # Nouveau bloc with pour gérer le contexte
+
+        # 2. Création d'un token de manageur valide
+        with self.app.app_context():
+            manageur_token = create_access_token(
+                identity="diel@gmail.com",
+                additional_claims={
+                    "user_id": 3,  # Correspond au manageur_id dans la route
+                    "role": "Manageur"
+                }
+            )
+
+        # 3. Exécution de la requête
         with self.app.app_context():
             response = self.client.post(
-                '/creation-livreur/2',
+                '/creation-livreur/3',  # Doit correspondre au user_id dans le token
                 data=json.dumps(test_data),
-                content_type='application/json'
+                content_type='application/json',
+                headers={'Authorization': f'Bearer {manageur_token}'}
             )
-            print(response.data)  # Debug
+
+            # Debug
+            print("Status Code:", response.status_code)
+            print("Response Data:", response.get_json())
+
+            # 4. Assertions
             self.assertEqual(response.status_code, 201)
-            response_data = json.loads(response.data)
-            self.assertIn('message', response_data)
+            response_data = response.get_json()
             self.assertEqual(response_data['message'], "Livreur créé avec succès")
+            self.assertIn('livreur', response_data)
+            self.assertEqual(response_data['livreur']['manageur_id'], 3)
 
 
 if __name__ == '__main__':

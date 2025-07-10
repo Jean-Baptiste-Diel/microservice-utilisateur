@@ -6,3 +6,4 @@ psycopg2-binary
 bcrypt
 SQLAlchemy
 alembic
+flask-jwt-extended

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  service-utilisateur:
+    build: ./utilisateur
+    ports:
+      - "5000:5000"
+    networks:
+      - microservices-network
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+
+  service-commentaire:
+    build: ./commentaire
+    ports:
+      - "5000:5000"
+    networks:
+      - microservices-network
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+    depends_on:
+      - clients-service
+
+networks:
+  microservices-network:
+    driver: bridge

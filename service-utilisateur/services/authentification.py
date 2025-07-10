@@ -2,6 +2,7 @@ from http.client import responses
 
 import bcrypt
 from flask import jsonify, request, session
+from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import SQLAlchemyError
 
 from configs.config import db
@@ -9,6 +10,7 @@ from models import Utilisateur
 
 
 def connexion():
+
     try:
         donnees = request.get_json()
         if not donnees:
@@ -23,10 +25,14 @@ def connexion():
             return jsonify({"message": "Identifiant invalide"}), 401
 
         if bcrypt.checkpw( donnees['mot_de_passe'].encode('utf-8'), utilisateur.mot_de_passe.encode('utf-8')):
+            # Création du token
+            access_token = create_access_token(identity=donnees['email'])
+            access_token=access_token
             response ={"message": "Identifiant valide",
                             "utilisateur":{
                                 "id": utilisateur.id,
                                 "email": utilisateur.email,
+                                "token": access_token
                             }
                         }
             return jsonify(response), 200
