@@ -32,6 +32,7 @@ class Utilisateur(db.Model):
 class Client(db.Model):
     __tablename__ = 'clients'
     id = db.Column(db.Integer, primary_key=True)
+    lieu_livraison = db.Column(db.String(100), nullable=False)
     utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'), unique=True)
     creation_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True)
 

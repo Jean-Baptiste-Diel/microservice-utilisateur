@@ -1,8 +1,8 @@
-version: '3.8'
+
 
 services:
   service-utilisateur:
-    build: ./utilisateur
+    build: ./service-utilisateur
     ports:
       - "5000:5000"
     networks:
@@ -12,7 +12,7 @@ services:
       FLASK_ENV: development
 
   service-commentaire:
-    build: ./commentaire
+    build: ./service-livraison
     ports:
       - "5001:5001"
     networks:
@@ -21,7 +21,7 @@ services:
       FLASK_APP: app.py
       FLASK_ENV: development
     depends_on:
-      - clients-service
+      - service-utilisateur
 
 networks:
   microservices-network:

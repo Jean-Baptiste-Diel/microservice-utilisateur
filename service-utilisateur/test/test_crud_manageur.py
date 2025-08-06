@@ -22,11 +22,10 @@ class TestManageurCreation(unittest.TestCase):
         test_data = {
             "nom": "manageur",
             "prenom": "Diel",
-            "email": "diel@gmail.com",  # Changé pour être unique
+            "email": "diel8@gmail.com",  # Changé pour être unique
             "mot_de_passe": "diel123",
             "role_id": 3
         }
-
         # Nouveau bloc with pour gérer le contexte
         with self.app.app_context():
             response = self.client.post(
@@ -42,6 +41,25 @@ class TestManageurCreation(unittest.TestCase):
             self.assertIn('message', response_data)
             self.assertEqual(response_data['message'], "Manager créé avec succès")
 
+    def test_creation_utilisateur_manageur_email_invalide(self):
+        test_data = {
+            "nom": "manageur",
+            "prenom": "Diel",
+            "email": "diele@gmail.com",  # Changé pour être unique
+            "mot_de_passe": "diel123",
+            "role_id": 3
+        }
+        # Nouveau bloc with pour gérer le contexte
+        with self.app.app_context():
+            response = self.client.post(
+                '/creation-manageur',
+                data=json.dumps(test_data),
+                content_type='application/json'
+            )
+            print(response.data)  # Debug
 
+            self.assertEqual(response.status_code, 409)
+            response_data = json.loads(response.data)
+            self.assertIn('message', response_data)
 if __name__ == '__main__':
     unittest.main()

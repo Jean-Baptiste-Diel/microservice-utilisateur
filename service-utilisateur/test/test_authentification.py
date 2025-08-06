@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         # Création de l'application de test
         self.app = creation_app()
         self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'  # PostreSQL database
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.client = self.app.test_client()
 

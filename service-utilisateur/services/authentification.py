@@ -10,7 +10,6 @@ from models import Utilisateur
 
 
 def connexion():
-
     try:
         donnees = request.get_json()
         if not donnees:
@@ -26,12 +25,15 @@ def connexion():
 
         if bcrypt.checkpw( donnees['mot_de_passe'].encode('utf-8'), utilisateur.mot_de_passe.encode('utf-8')):
             # Création du token
-            access_token = create_access_token(identity=donnees['email'])
-            access_token=access_token
+            access_token = create_access_token(identity={
+                "id": utilisateur.id,
+                "email": utilisateur.email,
+            })
             response ={"message": "Identifiant valide",
                             "utilisateur":{
                                 "id": utilisateur.id,
                                 "email": utilisateur.email,
+                                "role": utilisateur.role.nom_du_role,
                                 "token": access_token
                             }
                         }
@@ -39,10 +41,7 @@ def connexion():
         else:
             return jsonify({"message": "Identifiant invalide"}), 401
     except SQLAlchemyError as e:
-        db.session.rollback()
         return jsonify({"message": "Erreur de base de données"}), 500
-    except Exception as e:
-        return jsonify({"message": "Erreur serveur"}), 500
 
 
 def deconnexion():

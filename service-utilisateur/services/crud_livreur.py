@@ -4,6 +4,8 @@ from flask import jsonify, request
 from sqlalchemy.exc import SQLAlchemyError
 from configs.config import db
 from models import Manageur, Utilisateur, Role, Livreur
+from utils import fonction
+from utils.fonction import validation_email, validation_des_maj_utilisateur
 
 
 def creation_livreur(manageur_id, donnees):
@@ -11,11 +13,7 @@ def creation_livreur(manageur_id, donnees):
         if not all(champ in donnees for champ in ['nom', 'prenom', 'email', 'mot_de_passe']):
             return jsonify({"error": "Champs manquants"}), 400
         # Validation email
-        if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", donnees['email']):
-            return jsonify({"error": "Format d'email invalide"}), 400
-        # Vérification email unique
-        if Utilisateur.query.filter_by(email=donnees['email']).first():
-            return jsonify({"error": "Cet email est déjà utilisé"}), 409
+        validation_email(donnees['email'])
         # Vérification rôle existe
         #role = Role.query.get(donnees['role_id'])
         role = db.session.get(Role, donnees['role_id'])
@@ -75,7 +73,6 @@ def creation_livreur(manageur_id, donnees):
             "details": str(e)
         }), 500
 
-
 def mettre_a_jour_livreur(livreur_id):
     try:
         donnees = request.get_json()
@@ -91,53 +88,7 @@ def mettre_a_jour_livreur(livreur_id):
 
         utilisateur = livreur.utilisateur
 
-        # Champs autorisés pour mise à jour
-        champs_modifiables = {
-            'nom': str,
-            'prenom': str,
-            'email': str,
-            'mot_de_passe': str,
-            'status': str,
-            'role_id': int
-        }
-
-        # Validation et traitement des champs
-        for champ, type_donnee in champs_modifiables.items():
-            if champ in donnees:
-                # Validation spéciale pour l'email
-                if champ == 'email':
-                    if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", donnees['email']):
-                        return jsonify({"error": "Format d'email invalide"}), 400
-                    if Utilisateur.query.filter(Utilisateur.email == donnees['email'],
-                                                Utilisateur.id != utilisateur.id).first():
-                        return jsonify({"error": "Cet email est déjà utilisé par un autre utilisateur"}), 409
-
-                # Validation spéciale pour le rôle
-                elif champ == 'role_id':
-                    if not Role.query.get(donnees['role_id']):
-                        return jsonify({"error": "Rôle spécifié introuvable"}), 404
-
-                # Validation spéciale pour le mot de passe
-                elif champ == 'mot_de_passe':
-                    if len(donnees['mot_de_passe']) < 8:
-                        return jsonify({"error": "Le mot de passe doit contenir au moins 8 caractères"}), 400
-                    donnees['mot_de_passe'] = bcrypt.hashpw(
-                        donnees['mot_de_passe'].encode('utf-8'),
-                        bcrypt.gensalt()
-                    ).decode('utf-8')
-
-                # Conversion du type de données
-                try:
-                    donnees[champ] = type_donnee(donnees[champ])
-                except (ValueError, TypeError):
-                    return jsonify({"error": f"Valeur invalide pour le champ {champ}"}), 400
-
-                # Mise à jour de l'attribut
-                setattr(utilisateur, champ, donnees[champ])
-
-        # Validation du status
-        if 'status' in donnees and donnees['status'] not in ['ACTIVE', 'INACTIVE', 'SUSPENDED']:
-            return jsonify({"error": "Statut invalide"}), 400
+        validation_des_maj_utilisateur(donnees, utilisateur)
 
         db.session.commit()
         return jsonify({

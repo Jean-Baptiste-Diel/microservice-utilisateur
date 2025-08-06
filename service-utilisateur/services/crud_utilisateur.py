@@ -1,10 +1,11 @@
-import re
+
 import bcrypt
 from flask import request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
-import app
 from configs.config import db
 from models import Utilisateur, Role
+from utils.fonction import validation_email
+
 
 def creation_utilisateur():
     try:
@@ -14,11 +15,7 @@ def creation_utilisateur():
         if not all(champ in donnees for champ in champs_requis):
             return jsonify({"error": "Champs manquants", "requis": champs_requis}), 400
         # Validation email
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", donnees['email']):
-            return jsonify({"error": "Format d'email invalide"}), 400
-        # Vérification email unique
-        if Utilisateur.query.filter_by(email=donnees['email']).first():
-            return jsonify({"error": "Cet email est déjà utilisé"}), 409
+        validation_email(donnees['email'])
         # Vérification rôle existe
         role = db.session.get(Role, donnees['role_id'])
         if not role:
@@ -44,10 +41,9 @@ def creation_utilisateur():
         }), 201
     except SQLAlchemyError as e:
         db.session.rollback()
-        app.logger.error(f"Erreur DB: {str(e)}")
+        print(e)
         return jsonify({"error": "Erreur de base de données"}), 500
     except Exception as e:
-        app.logger.error(f"Erreur inattendue: {str(e)}")
         return jsonify({"error": "Erreur serveur"}), 500
 
 def archiver_utilisateur(id_utilisateur):
@@ -60,10 +56,9 @@ def archiver_utilisateur(id_utilisateur):
         return jsonify({"message": "Utilisateur archivé avec succès"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
-        app.logger.error(f"Erreur DB: {str(e)}")
         return jsonify({"error": "Erreur de base de données"}), 500
 
-def mettre_a_jour_utilisateur(id_utilisateur):
+def mettre_a_jour_utilisateur(id_utilisateur: None, client_id: None, livreur_id: None, manageur_id: None):
     try:
         utilisateur = Utilisateur.query.get(id_utilisateur)
         if not utilisateur:
@@ -91,5 +86,4 @@ def mettre_a_jour_utilisateur(id_utilisateur):
         return jsonify({"message": "Utilisateur mis à jour avec succès"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
-        app.logger.error(f"Erreur DB: {str(e)}")
         return jsonify({"error": "Erreur de base de données"}), 500
