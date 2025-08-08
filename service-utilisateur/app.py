@@ -1,8 +1,11 @@
+import os
+
 from flask_jwt_extended import jwt_required, get_jwt, JWTManager
 
-from services.crud_livreur import creation_livreur
-from services.crud_manageur import creation_manageur
-from services.crud_utilisateur import *
+from blueprint.auth import auth_bp
+from services.crud.crud_livreur import creation_livreur
+from services.crud.crud_manageur import creation_manageur
+from services.crud.crud_utilisateur import *
 from services.authentification import *
 from services.service_commentaire import *
 from flask import Flask
@@ -11,12 +14,20 @@ from flask_cors import CORS
 from configs.config import db
 
 migrate= Migrate()
-
+# Blueprint?
 def creation_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'  # PostreSQL database
+    database_url = os.environ.get('DATABASE_URL')
+    print(f"Tentative de connexion à : {database_url}")  # Pour le débogage
+
+    if not database_url:
+        raise ValueError("La variable DATABASE_URL n'est pas définie")
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
     app.config["JWT_SECRET_KEY"] = "admin"  # À changer en prod !
     jwt = JWTManager(app)
     db.init_app(app)
@@ -24,6 +35,8 @@ def creation_app():
 
     with app.app_context():
         db.create_all()
+
+    app.register_blueprint(auth_bp)
 
     @app.route('/')
     def index():
@@ -42,9 +55,9 @@ def creation_app():
         archiver = archiver_utilisateur(id)
         return archiver
 
-    @app.route('/modifier/<int:id>', methods=["POST"])
-    def modifier_route():
-        modifier = mettre_a_jour_utilisateur(id)
+    @app.route('/modifier/<int:id_utilisateur>', methods=["POST"])
+    def modifier_route(id_utilisateur=None):
+        modifier = mettre_a_jour_utilisateur(id_utilisateur)
         return modifier
 
     @app.route('/connexion', methods=["POST"])
@@ -85,4 +98,4 @@ def creation_app():
 application = creation_app()
 
 if __name__ == '__main__':
-    application.run(debug=True, port=5000)
+    application.run(debug=True, port=5000, host='0.0.0.0')

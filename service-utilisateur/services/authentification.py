@@ -1,11 +1,7 @@
-from http.client import responses
-
 import bcrypt
 from flask import jsonify, request, session
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import SQLAlchemyError
-
-from configs.config import db
 from models import Utilisateur
 
 
@@ -41,6 +37,7 @@ def connexion():
         else:
             return jsonify({"message": "Identifiant invalide"}), 401
     except SQLAlchemyError as e:
+        print(e)
         return jsonify({"message": "Erreur de base de données"}), 500
 
 

@@ -22,7 +22,7 @@ class TestManageurCreation(unittest.TestCase):
         test_data = {
             "nom": "manageur",
             "prenom": "Diel",
-            "email": "diel8@gmail.com",  # Changé pour être unique
+            "email": "diel4@gmail.com",  # Changé pour être unique
             "mot_de_passe": "diel123",
             "role_id": 3
         }

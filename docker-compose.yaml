@@ -1,0 +1,68 @@
+services:
+  # Service Utilisateur et sa base de données
+  db-utilisateur:
+    image: postgres:17
+    container_name: db-utilisateur
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: memoire_microservice_utilisateur
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  service-utilisateur:
+    build: ./service-utilisateur
+    container_name: service-utilisateur
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:admin@db-utilisateur:5432/memoire_microservice_utilisateur"
+    depends_on:
+      db-utilisateur:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - app-network
+
+  # Service livraison et sa base de données
+  db-livraison:
+    image: postgres:17
+    container_name: db-livraison
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: memoire_microservice_commentaire
+    ports:
+      - "5433:5432"  # Notez le port différent pour éviter les conflits
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  service-livraison:
+    build: ./service-livraison
+    container_name: service-livraison
+    ports:
+      - "5001:5001"  # Port différent pour le service commentaire
+    environment:
+      DATABASE_URL: "postgresql://postgres:admin@db-livraison:5432/memoire_microservice_commentaire"
+    depends_on:
+      db-livraison:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

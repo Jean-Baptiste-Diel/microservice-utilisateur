@@ -6,7 +6,6 @@ from configs.config import db
 from models import Utilisateur, Role
 from utils.fonction import validation_email
 
-
 def creation_utilisateur():
     try:
         donnees = request.get_json()
@@ -15,7 +14,9 @@ def creation_utilisateur():
         if not all(champ in donnees for champ in champs_requis):
             return jsonify({"error": "Champs manquants", "requis": champs_requis}), 400
         # Validation email
-        validation_email(donnees['email'])
+        message_erreur, code_erreur = validation_email(donnees['email'])
+        if message_erreur:
+            return jsonify(message_erreur), code_erreur
         # Vérification rôle existe
         role = db.session.get(Role, donnees['role_id'])
         if not role:
@@ -41,10 +42,9 @@ def creation_utilisateur():
         }), 201
     except SQLAlchemyError as e:
         db.session.rollback()
-        print(e)
-        return jsonify({"error": "Erreur de base de données"}), 500
-    except Exception as e:
-        return jsonify({"error": "Erreur serveur"}), 500
+        return jsonify({
+            "message": "Erreur de base de données",
+            "error": e}), 500
 
 def archiver_utilisateur(id_utilisateur):
     try:
@@ -56,9 +56,11 @@ def archiver_utilisateur(id_utilisateur):
         return jsonify({"message": "Utilisateur archivé avec succès"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({"error": "Erreur de base de données"}), 500
+        return jsonify({
+            "message": "Erreur de base de données",
+            "error": e}), 500
 
-def mettre_a_jour_utilisateur(id_utilisateur: None, client_id: None, livreur_id: None, manageur_id: None):
+def mettre_a_jour_utilisateur(id_utilisateur: int | None = None, client_id: int | None = None, livreur_id: int | None = None, manageur_id: int | None = None):
     try:
         utilisateur = Utilisateur.query.get(id_utilisateur)
         if not utilisateur:
@@ -86,4 +88,6 @@ def mettre_a_jour_utilisateur(id_utilisateur: None, client_id: None, livreur_id:
         return jsonify({"message": "Utilisateur mis à jour avec succès"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({"error": "Erreur de base de données"}), 500
+        return jsonify({
+            "message": "Erreur de base de données",
+            "error": e}), 500
