@@ -23,7 +23,7 @@ class TestLivreurEndpoints(unittest.TestCase):
         test_data = {
             "nom": "livreur",
             "prenom": "Diel",
-            "email": "livreur_test_4@gmail.com".format(uuid.uuid4().hex[:8]),  # Email unique
+            "email": "livreur_test_3484@gmail.com".format(uuid.uuid4().hex[:8]),  # Email unique
             "mot_de_passe": "diel123",
             "role_id": 4  # ID du rôle livreur
         }

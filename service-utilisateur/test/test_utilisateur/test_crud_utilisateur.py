@@ -8,7 +8,7 @@ class TestUtilisateurRoutes(unittest.TestCase):
         # Création de l'application de test
         self.app = creation_app()
         self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'  # PostreSQL database
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         self.client = self.app.test_client()
@@ -18,7 +18,7 @@ class TestUtilisateurRoutes(unittest.TestCase):
         test_data = {
             "nom": "INANG",
             "prenom": "Diel",
-            "email": "jean3@gmail.com",
+            "email": "jean30@gmail.com",
             "mot_de_passe": "diel123",
             "role_id": 3
         }

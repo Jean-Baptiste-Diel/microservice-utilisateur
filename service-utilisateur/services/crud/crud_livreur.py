@@ -6,6 +6,7 @@ def creation_livreur(manageur_id, donnees):
     try:
         if not db.session.is_active:
             db.session.begin()
+
         mot_de_passe_hasher = preparation_des_donnees(donnees)
         # Vérification que le manageur existe
         manageur = db.session.get(Manageur, manageur_id)
@@ -20,18 +21,13 @@ def creation_livreur(manageur_id, donnees):
                 email=donnees['email'],
                 mot_de_passe=mot_de_passe_hasher,
                 role_id=donnees['role_id'],
-                status="ACTIVE"  # Ajout du statut par défaut
             )
             db.session.add(nouvel_utilisateur)
             db.session.flush()  # Pour obtenir l'ID
             # Creation du livreur
-            livreur = Livreur(
-                utilisateur_id=nouvel_utilisateur.id,
-                manageur_id=manageur.id
-            )
+            livreur = Livreur(utilisateur_id=nouvel_utilisateur.id, manageur_id=manageur.id)
             db.session.add(livreur)
             db.session.commit()
-
             reponse = {
                 "message": "Livreur créé avec succès",
                 "livreur": {
@@ -45,5 +41,4 @@ def creation_livreur(manageur_id, donnees):
         db.session.rollback()
         return jsonify({
             "error": "Erreur de base de données",
-            "details": str(e)
-        }), 500
+            "details": str(e)}), 500

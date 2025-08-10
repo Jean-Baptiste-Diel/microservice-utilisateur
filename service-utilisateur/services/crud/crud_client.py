@@ -3,15 +3,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Client
 from utils.fonction import *
 
-
 def creation_client():
     try:
         if not db.session.is_active:
             db.session.begin()
+
         donnees = request.get_json()
         mot_de_passe_hasher = preparation_des_donnees(donnees)
         # Création dans une transaction
-
         with db.session():
             # Creation de l'utilisateur
             nouvel_utilisateur = Utilisateur(
@@ -24,10 +23,9 @@ def creation_client():
             db.session.add(nouvel_utilisateur)
             # Creation du manageur
             db.session.flush()  # Pour obtenir l'ID
-            client = Client(utilisateur_id=nouvel_utilisateur.id)
+            client = Client(utilisateur_id=nouvel_utilisateur.id, lieu_livraison = donnees['adresse'])
             db.session.add(client)
             db.session.commit()
-
             reponse = {
                 "message": "Client créé avec succès",
                 "client": {
@@ -40,5 +38,4 @@ def creation_client():
         db.session.rollback()
         return jsonify({
             "message": "Erreur de base de données",
-            "details": str(e)
-        }), 500
+            "details": str(e)}), 500

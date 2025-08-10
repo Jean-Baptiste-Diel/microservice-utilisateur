@@ -1,28 +1,17 @@
-
 import bcrypt
 from flask import request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
+
 from configs.config import db
 from models import Utilisateur, Role
-from utils.fonction import validation_email
+from utils.fonction import preparation_des_donnees
+
 
 def creation_utilisateur():
     try:
         donnees = request.get_json()
         # Validation des champs
-        champs_requis = ['nom', 'prenom', 'email', 'mot_de_passe', 'role_id']
-        if not all(champ in donnees for champ in champs_requis):
-            return jsonify({"error": "Champs manquants", "requis": champs_requis}), 400
-        # Validation email
-        message_erreur, code_erreur = validation_email(donnees['email'])
-        if message_erreur:
-            return jsonify(message_erreur), code_erreur
-        # Vérification rôle existe
-        role = db.session.get(Role, donnees['role_id'])
-        if not role:
-            return jsonify({"error": "Rôle spécifié introuvable"}), 404
-        # Hachage mot de passe
-        mot_de_passe_hasher = bcrypt.hashpw(donnees['mot_de_passe'].encode('utf-8'), bcrypt.gensalt())
+        mot_de_passe_hasher = preparation_des_donnees(donnees)
         # Création utilisateur
         nouvel_utilisateur = Utilisateur(
             nom=donnees['nom'],
@@ -44,21 +33,21 @@ def creation_utilisateur():
         db.session.rollback()
         return jsonify({
             "message": "Erreur de base de données",
-            "error": e}), 500
+            "details": e}), 500
 
 def archiver_utilisateur(id_utilisateur):
     try:
         utilisateur = Utilisateur.query.get(id_utilisateur)
         if not utilisateur:
-            return jsonify({"error": "Utilisateur introuvable"}), 404
-        utilisateur.status = "archive"
+            return jsonify({"message": "Utilisateur introuvable"}), 404
+        utilisateur.status = "INACTIVE"
         db.session.commit()
         return jsonify({"message": "Utilisateur archivé avec succès"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({
             "message": "Erreur de base de données",
-            "error": e}), 500
+            "details": e}), 500
 
 def mettre_a_jour_utilisateur(id_utilisateur: int | None = None, client_id: int | None = None, livreur_id: int | None = None, manageur_id: int | None = None):
     try:
