@@ -36,11 +36,6 @@ def creation_app():
     # Blueprint
     app.register_blueprint(auth_bp)
     app.register_blueprint(client_bp)
-    print("===== ROUTES ENREGISTRÉES =====")
-    for rule in app.url_map.iter_rules():
-        methods = ",".join(sorted(rule.methods))
-        print(f"{rule.rule}  [{methods}]")
-    print("====")
 
     @app.route('/')
     def index():
