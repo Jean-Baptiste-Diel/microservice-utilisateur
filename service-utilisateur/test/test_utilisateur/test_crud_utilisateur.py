@@ -8,9 +8,8 @@ class TestUtilisateurRoutes(unittest.TestCase):
         # Création de l'application de test
         self.app = creation_app()
         self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'DATABASE_URL'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
         self.client = self.app.test_client()
 
     def test_creation_utilisateur(self):
@@ -18,23 +17,21 @@ class TestUtilisateurRoutes(unittest.TestCase):
         test_data = {
             "nom": "INANG",
             "prenom": "Diel",
-            "email": "jean30@gmail.com",
+            "email": "jean3709@gmail.com",
             "mot_de_passe": "diel123",
             "role_id": 3
         }
-
         # Envoi de la requête
         response = self.client.post(
             '/creer-un-compte',
             data=json.dumps(test_data),
             content_type='application/json'
         )
-
         # Vérifications
         self.assertEqual(response.status_code, 201)
         response_data = json.loads(response.data)
-        self.assertIn('id', response_data)
-        print("Test création utilisateur - Réussi")
+        self.assertIn('message', response_data)
+        self.assertEqual(response_data['message'], "Utilisateur créé avec succès")
 
     def test_creation_utilisateur_donnees_invalides(self):
         """Test avec des données invalides"""
@@ -45,16 +42,13 @@ class TestUtilisateurRoutes(unittest.TestCase):
             "mot_de_passe": "short",
             "role_id": 1
         }
-
         response = self.client.post(
             '/creer-un-compte',
             data=json.dumps(test_data),
             content_type='application/json'
         )
-
         self.assertEqual(response.status_code, 400)
         print("Test données invalides - Réussi")
-
 
 if __name__ == '__main__':
     unittest.main()

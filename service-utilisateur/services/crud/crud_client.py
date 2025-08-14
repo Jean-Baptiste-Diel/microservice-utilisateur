@@ -7,9 +7,12 @@ def creation_client():
     try:
         if not db.session.is_active:
             db.session.begin()
-
         donnees = request.get_json()
+        # 2) Validation / préparation générique
         mot_de_passe_hasher = preparation_des_donnees(donnees)
+        if isinstance(mot_de_passe_hasher, tuple):
+            # preparation_des_donnees a renvoyé une réponse d'erreur
+            return mot_de_passe_hasher
         # Création dans une transaction
         with db.session():
             # Creation de l'utilisateur

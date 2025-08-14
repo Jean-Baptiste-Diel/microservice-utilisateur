@@ -31,5 +31,7 @@ class MyTestCase(unittest.TestCase):
         response_data = json.loads(response.data)
         self.assertIn('message', response_data)
         print("Test création livraison - Réussi")
+
+
 if __name__ == '__main__':
     unittest.main()

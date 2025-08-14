@@ -10,6 +10,9 @@ def creation_manageur():
 
         donnees = request.get_json()
         mot_de_passe_hasher = preparation_des_donnees(donnees)
+        if isinstance(mot_de_passe_hasher, tuple):
+            # preparation_des_donnees a renvoyé une réponse d'erreur
+            return mot_de_passe_hasher
         # Création dans une transaction
         with db.session():
             # Creation de l'utilisateur

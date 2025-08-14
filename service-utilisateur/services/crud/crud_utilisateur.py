@@ -12,12 +12,15 @@ def creation_utilisateur():
         donnees = request.get_json()
         # Validation des champs
         mot_de_passe_hasher = preparation_des_donnees(donnees)
+        if isinstance(mot_de_passe_hasher, tuple):
+            return mot_de_passe_hasher
+
         # Création utilisateur
         nouvel_utilisateur = Utilisateur(
             nom=donnees['nom'],
             prenom=donnees['prenom'],
             email=donnees['email'],
-            mot_de_passe=mot_de_passe_hasher.decode('utf-8'),
+            mot_de_passe=mot_de_passe_hasher,
             role_id=donnees['role_id']
         )
         db.session.add(nouvel_utilisateur)
@@ -49,7 +52,7 @@ def archiver_utilisateur(id_utilisateur):
             "message": "Erreur de base de données",
             "details": e}), 500
 
-def mettre_a_jour_utilisateur(id_utilisateur: int | None = None, client_id: int | None = None, livreur_id: int | None = None, manageur_id: int | None = None):
+def mettre_a_jour_utilisateur(id_utilisateur: int):
     try:
         utilisateur = Utilisateur.query.get(id_utilisateur)
         if not utilisateur:

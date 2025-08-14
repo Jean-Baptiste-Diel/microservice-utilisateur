@@ -8,6 +8,9 @@ def creation_livreur(manageur_id, donnees):
             db.session.begin()
 
         mot_de_passe_hasher = preparation_des_donnees(donnees)
+        if isinstance(mot_de_passe_hasher, tuple):
+            # preparation_des_donnees a renvoyé une réponse d'erreur
+            return mot_de_passe_hasher
         # Vérification que le manageur existe
         manageur = db.session.get(Manageur, manageur_id)
         if not manageur:

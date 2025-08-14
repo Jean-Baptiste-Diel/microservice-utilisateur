@@ -7,6 +7,8 @@ from blueprint.client_bp import client_bp
 from flask import Flask
 from flask_migrate import Migrate
 from flask_cors import CORS
+
+from blueprint.manageur_bp import manageur_bp
 from configs.config import db
 
 migrate= Migrate()
@@ -16,7 +18,7 @@ def creation_app():
 
     JWTManager(app)
     CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
-
+# 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'
     database_url = os.environ.get('DATABASE_URL')
     print(f"Tentative de connexion à : {database_url}")  # Pour le débogage
 
@@ -36,13 +38,14 @@ def creation_app():
     # Blueprint
     app.register_blueprint(auth_bp)
     app.register_blueprint(client_bp)
+    app.register_blueprint(manageur_bp)
 
     @app.route('/')
     def index():
         return "service utilisateur"
 
     return app
-application = creation_app()
-if __name__ == '__main__':
 
+if __name__ == '__main__':
+    application = creation_app()
     application.run(debug=True, port=5000, host='0.0.0.0')

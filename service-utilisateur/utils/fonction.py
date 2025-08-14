@@ -7,7 +7,6 @@ from configs.config import db
 from models import Utilisateur, Role
 
 def validation_email(email: str, utilisateur_id: int = None) -> Tuple[Optional[dict], Optional[int]]:
-
     if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
         return {"message": "Format d'email invalide"}, 400
     # Vérification email unique
@@ -15,14 +14,10 @@ def validation_email(email: str, utilisateur_id: int = None) -> Tuple[Optional[d
     query = Utilisateur.query.filter_by(email=email)
     if utilisateur_id is not None:
         query = query.filter(Utilisateur.id != utilisateur_id)
-
     if query.first():
         return {"message": "Cet email est déjà utilisé"}, 409
-
         # 3. Succès
     return None, None
-
-
 
 def validation_des_maj_utilisateur(donnees, utilisateur):
     # Champs autorisés pour mise à jour
@@ -34,7 +29,6 @@ def validation_des_maj_utilisateur(donnees, utilisateur):
         'status': str,
         'role_id': int
     }
-
     # Validation et traitement des champs
     for champ, type_donnee in champs_modifiables.items():
         if champ in donnees:
@@ -71,12 +65,12 @@ def validation_des_maj_utilisateur(donnees, utilisateur):
     # Validation du status
     if 'status' in donnees and donnees['status'] not in ['ACTIVE', 'INACTIVE', 'SUSPENDED']:
         return jsonify({"error": "Statut invalide"}), 400
+    return None
 
 def preparation_des_donnees(donnees):
     # Validation des données
     if not donnees:
         return jsonify({"error": "Aucune donnée fournie"}), 400
-
     champs_requis = ['nom', 'prenom', 'email', 'mot_de_passe', 'role_id']
     if not all(champ in donnees for champ in champs_requis):
         return jsonify({
@@ -84,21 +78,17 @@ def preparation_des_donnees(donnees):
             "requis": champs_requis,
             "reçus": list(donnees.keys())
         }), 400
-
     # Validation email
     message_erreur, code_erreur = validation_email(donnees['email'])
     if message_erreur:
         return jsonify(message_erreur), code_erreur
-
     # Vérification rôle existe
     role = db.session.get(Role, donnees['role_id'])
     if not role:
         return jsonify({"message": "Rôle spécifié introuvable"}), 404
-
     # Hachage mot de passe
     mot_de_passe_hasher = bcrypt.hashpw(
         donnees['mot_de_passe'].encode('utf-8'),
         bcrypt.gensalt()
     ).decode('utf-8')
-
     return mot_de_passe_hasher

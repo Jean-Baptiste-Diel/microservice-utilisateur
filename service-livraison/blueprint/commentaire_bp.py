@@ -1,0 +1,11 @@
+from flask import Blueprint
+
+
+from services.crud_commentaire import ajouter_commentaire
+
+commentaire_bp = Blueprint('commentaire', __name__)
+
+@commentaire_bp.route('/commentaire', methods=['POST'])
+def ajouter_commentaire_route():
+    commentaire = ajouter_commentaire()
+    return commentaire

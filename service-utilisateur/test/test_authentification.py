@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         # Création de l'application de test
         self.app = creation_app()
         self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'  # PostreSQL database
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'DATABASE_URL'  # PostreSQL database
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.client = self.app.test_client()
 
@@ -20,16 +20,13 @@ class MyTestCase(unittest.TestCase):
             "email": "jean@gmail.com",  # Correction: "email" au lieu de "nom"
             "mot_de_passe": "diel123"
         }
-
         response = self.client.post('/connexion',
             data=json.dumps(data),
             content_type='application/json'
         )
-
             # Debug
         print("Statut HTTP:", response.status_code)
         print("Réponse JSON:", response.get_json())
-
             # Assertions
         self.assertEqual(response.status_code, 200)
         json_data = response.get_json()
@@ -42,14 +39,11 @@ class MyTestCase(unittest.TestCase):
             "email": "jean@gmail.com",
             "mot_de_passe": "mauvaispassword"
         }
-
         response = self.client.post('/connexion',
             data=json.dumps(data),
             content_type='application/json'
         )
-
         print("Réponse JSON:", response.get_json())
-
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.get_json()['message'], "Identifiant invalide")
 
@@ -60,7 +54,6 @@ class MyTestCase(unittest.TestCase):
             {"mot_de_passe": ""},  # Manque email
             {}  # Tous les champs manquants
         ]
-
         for case in test_cases:
             response = self.client.post('/connexion',
                 data=json.dumps(case),
@@ -69,9 +62,6 @@ class MyTestCase(unittest.TestCase):
         print("Réponse JSON:", response.get_json())
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.get_json()['message'], "Tous les champs sont requis")
-
-
-
 
 if __name__ == '__main__':
     unittest.main()

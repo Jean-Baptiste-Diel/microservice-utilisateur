@@ -8,7 +8,7 @@ from models import Livraison
 def ajouter_livraison():
     try:
         donnees = request.get_json()
-        champs_requis = ['matricule', 'status', 'client_id', 'livreur_id']
+        champs_requis = ['matricule', 'client_id', 'livreur_id']
         if not all(champ in donnees for champ in champs_requis):
             return jsonify({'error': 'Tous les champs sont requis'}), 400
 
@@ -18,7 +18,6 @@ def ajouter_livraison():
 
         nouvel_livraison = Livraison(
             matricule=donnees['matricule'],
-            status=donnees['status'],
             livreur_id=donnees['livreur_id'],
             client_id=donnees['client_id'],
         )
