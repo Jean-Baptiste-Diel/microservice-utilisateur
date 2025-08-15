@@ -3,6 +3,7 @@ import unittest
 from flask import json
 
 from app import creation_app
+from services.service_prediction import predict_sentiment
 
 
 class MyTestCase(unittest.TestCase):
@@ -14,15 +15,15 @@ class MyTestCase(unittest.TestCase):
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.client = self.app.test_client()
 
-    def test_ajouter_livraison(self):
+    def test_ajouter_commentaire(self):
         donnee_test = {
-            'matricule': '13',
-            'client_id': '1',
-            'livreur_id': '2',
+            'commentaire': 'Correct mais emballage un peu léger pour un produit fragile',
+            'livraison_id': '2',
         }
+        #prediction = predire_commentaire(donnee_test['commentaire'])
         # Envoi de la requête
         response = self.client.post(
-            '/livraison',
+            '/commentaire',
             data=json.dumps(donnee_test),
             content_type='application/json'
         )
