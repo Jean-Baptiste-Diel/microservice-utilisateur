@@ -1,10 +1,7 @@
 import unittest
 
 from flask import json
-
 from app import creation_app
-from services.service_prediction import predict_sentiment
-
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
@@ -20,7 +17,6 @@ class MyTestCase(unittest.TestCase):
             'commentaire': 'Correct mais emballage un peu léger pour un produit fragile',
             'livraison_id': '2',
         }
-        #prediction = predire_commentaire(donnee_test['commentaire'])
         # Envoi de la requête
         response = self.client.post(
             '/commentaire',
@@ -32,7 +28,6 @@ class MyTestCase(unittest.TestCase):
         response_data = json.loads(response.data)
         self.assertIn('message', response_data)
         print("Test création livraison - Réussi")
-
 
 if __name__ == '__main__':
     unittest.main()
