@@ -16,7 +16,6 @@ class MyTestCase(unittest.TestCase):
 
     def test_ajouter_livraison(self):
         donnee_test = {
-            'matricule': '13',
             'client_id': '1',
             'livreur_id': '2',
         }

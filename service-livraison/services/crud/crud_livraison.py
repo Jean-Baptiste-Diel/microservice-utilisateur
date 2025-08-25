@@ -4,20 +4,19 @@ from sqlalchemy.exc import SQLAlchemyError
 from configs.config import db
 from models import Livraison
 
-
 def ajouter_livraison():
     try:
         donnees = request.get_json()
-        champs_requis = ['matricule', 'client_id', 'livreur_id']
+        champs_requis = ['client_id', 'livreur_id']
         if not all(champ in donnees for champ in champs_requis):
             return jsonify({'error': 'Tous les champs sont requis'}), 400
 
         def generateur_matricule():
-            matricule = ""
-            pass
+            matricule = "7"
+            return matricule
 
         nouvel_livraison = Livraison(
-            matricule=donnees['matricule'],
+            matricule=generateur_matricule(),
             livreur_id=donnees['livreur_id'],
             client_id=donnees['client_id'],
         )

@@ -10,7 +10,9 @@ from flask_cors import CORS
 
 from blueprint.manageur_bp import manageur_bp
 from configs.config import db
+from dotenv import load_dotenv
 
+load_dotenv()
 migrate= Migrate()
 
 def creation_app():
@@ -18,16 +20,14 @@ def creation_app():
 
     JWTManager(app)
     CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
-# 'postgresql://postgres:admin@localhost/memoire_microservice_utilisateur'
-    database_url = os.environ.get('DATABASE_URL')
-    print(f"Tentative de connexion à : {database_url}")  # Pour le débogage
 
+    database_url = os.environ.get('DATABASE_URL')
     if not database_url:
         raise ValueError("La variable DATABASE_URL n'est pas définie")
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config["JWT_SECRET_KEY"] = "admin"  # À changer en prod !
+      # À changer en prod !
 
     db.init_app(app)
     migrate.init_app(app, db)

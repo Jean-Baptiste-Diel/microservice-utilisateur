@@ -15,7 +15,7 @@ class MyTestCase(unittest.TestCase):
     def test_ajouter_commentaire(self):
         donnee_test = {
             'commentaire': 'Correct mais emballage un peu léger pour un produit fragile',
-            'livraison_id': '2',
+            'livraison_id': '1',
         }
         # Envoi de la requête
         response = self.client.post(
@@ -29,5 +29,26 @@ class MyTestCase(unittest.TestCase):
         self.assertIn('message', response_data)
         print("Test création livraison - Réussi")
 
+    def test_afficher_commentaire_client_livrer(self):
+        donnee_test = {'client_id': 1}
+        response = self.client.get(
+            '/commentaires/1',
+            data=json.dumps(donnee_test),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.data)
+        print("Test afficher livraison", response_data)
+
+    def test_archiver_commentaire(self):
+        donnee_test = {'id': 2}
+        response = self.client.post(
+            '/supprimer/2',
+            data=json.dumps(donnee_test),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.data)
+        print("Test archiver commentaire", response_data.message)
 if __name__ == '__main__':
     unittest.main()
