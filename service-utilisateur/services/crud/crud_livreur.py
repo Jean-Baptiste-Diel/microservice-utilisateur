@@ -1,4 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
+
 from models import Manageur, Livreur
 from utils.fonction import *
 
@@ -45,3 +46,16 @@ def creation_livreur(manageur_id, donnees):
         return jsonify({
             "error": "Erreur de base de données",
             "details": str(e)}), 500
+
+def info_livreur(livreur_id):
+    try:
+        livreur = db.session.get(Livreur, livreur_id)
+        if not livreur:
+            return jsonify({"Aucun livreur trouver"})
+        return jsonify(livreur), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({str(e)})
+
+def supprimer_compte(utilisateur_id):
+    pass

@@ -13,4 +13,4 @@ with app.app_context():
     ]
     db.session.add_all(roles)
     db.session.commit()
-    print("initialisation terminé !")
+    print("initialisation des roles terminé !")
