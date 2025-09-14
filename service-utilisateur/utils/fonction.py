@@ -71,8 +71,9 @@ def preparation_des_donnees(donnees):
     # Validation des données
     if not donnees:
         return jsonify({"error": "Aucune donnée fournie"}), 400
-    champs_requis = ['nom', 'prenom', 'email', 'mot_de_passe', 'role_id']
+    champs_requis = ['nom', 'prenom', 'email', 'mot_de_passe']
     if not all(champ in donnees for champ in champs_requis):
+        print(donnees)
         return jsonify({
             "message": "Champs manquants",
             "requis": champs_requis,
@@ -83,9 +84,9 @@ def preparation_des_donnees(donnees):
     if message_erreur:
         return jsonify(message_erreur), code_erreur
     # Vérification rôle existe
-    role = db.session.get(Role, donnees['role_id'])
-    if not role:
-        return jsonify({"message": "Rôle spécifié introuvable"}), 404
+    #role = db.session.get(Role, donnees['role_id'])
+    #if not role:
+    #    return jsonify({"message": "Rôle spécifié introuvable"}), 404
     # Hachage mot de passe
     mot_de_passe_hasher = bcrypt.hashpw(
         donnees['mot_de_passe'].encode('utf-8'),

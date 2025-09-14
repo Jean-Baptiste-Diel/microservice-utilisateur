@@ -58,3 +58,13 @@ class Livreur(db.Model):
 
     utilisateur = db.relationship('Utilisateur', back_populates='livreur')
     manageur = db.relationship('Manageur', back_populates='livreurs')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'utilisateur_id': self.utilisateur_id,
+            'manageur_id': self.manageur_id,
+            'nom': self.utilisateur.nom if self.utilisateur else None,
+            'prenom': self.utilisateur.prenom if self.utilisateur else None,
+            'email': self.utilisateur.email if self.utilisateur else None
+        }

@@ -2,7 +2,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
 from flask import jsonify
 from configs.config import db
-from models import Livreur, Utilisateur
+from models import Livreur, Utilisateur, Manageur
+
 
 # Changer le statut du livreur
 def bloquer_livreur(utilisateur_id):
@@ -44,12 +45,12 @@ def afficher_livreur(livreur_id):
 
 def afficher_livreurs(manageur_id):
     try:
+        manageur = Manageur.query.filter_by(utilisateur_id=manageur_id).first()
         liveurs = (db.session.query(Livreur)
             .join(Utilisateur, Utilisateur.id == Livreur.utilisateur_id)
-            .filter(Livreur.manageur_id == manageur_id)).all()
-        return jsonify({
-            'message': "Livreur disponible",
-            'Livreur': [liveur.to_dict() for liveur in liveurs]}), 200
+            .filter(Livreur.manageur_id == manageur.id)).all()
+        print(liveurs)
+        return jsonify([liveur.to_dict() for liveur in liveurs]), 200
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"message": str(e)}), 500

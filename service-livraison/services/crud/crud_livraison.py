@@ -26,3 +26,10 @@ def ajouter_livraison():
     except SQLAlchemyError as e:
         return jsonify({'erreur': str(e)}), 500
 
+def afficher_livraison(client_id):
+    try:
+        livraisons = Livraison.query.filter_by(client_id=client_id).all()
+        print(livraisons)
+        return jsonify([livraison.to_dict() for livraison in livraisons]), 200
+    except SQLAlchemyError as e:
+        return jsonify({'erreur': str(e)}), 400

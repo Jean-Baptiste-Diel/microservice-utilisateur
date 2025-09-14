@@ -13,7 +13,8 @@ def creation_livreur(manageur_id, donnees):
             # preparation_des_donnees a renvoyé une réponse d'erreur
             return mot_de_passe_hasher
         # Vérification que le manageur existe
-        manageur = db.session.get(Manageur, manageur_id)
+        manageur = Manageur.query.filter_by(utilisateur_id=manageur_id).first()
+        print(manageur)
         if not manageur:
             return jsonify({"error": "Manageur spécifié introuvable"}), 404
         # Création dans une transaction
@@ -24,7 +25,7 @@ def creation_livreur(manageur_id, donnees):
                 prenom=donnees['prenom'],
                 email=donnees['email'],
                 mot_de_passe=mot_de_passe_hasher,
-                role_id=donnees['role_id'],
+                role_id=4,
             )
             db.session.add(nouvel_utilisateur)
             db.session.flush()  # Pour obtenir l'ID
@@ -51,7 +52,7 @@ def info_livreur(livreur_id):
     try:
         livreur = db.session.get(Livreur, livreur_id)
         if not livreur:
-            return jsonify({"Aucun livreur trouver"})
+            return jsonify({"message": "Livreur introuvable"})
         return jsonify(livreur), 200
     except SQLAlchemyError as e:
         db.session.rollback()

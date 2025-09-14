@@ -14,7 +14,6 @@ def creation_utilisateur():
         mot_de_passe_hasher = preparation_des_donnees(donnees)
         if isinstance(mot_de_passe_hasher, tuple):
             return mot_de_passe_hasher
-
         # Création utilisateur
         nouvel_utilisateur = Utilisateur(
             nom=donnees['nom'],

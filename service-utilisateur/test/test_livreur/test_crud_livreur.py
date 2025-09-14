@@ -17,7 +17,7 @@ class TestLivreurEndpoints(unittest.TestCase):
         test_data = {
             "nom": "livreur",
             "prenom": "Diel",
-            "email": "livreur_test_37484@gmail.com",  # Email unique
+            "email": "livreur_test_7484@gmail.com",  # Email unique
             "mot_de_passe": "diel123",
             "role_id": 4  # ID du rôle livreur
         }
@@ -26,14 +26,14 @@ class TestLivreurEndpoints(unittest.TestCase):
             manageur_token = create_access_token(
                 identity="diel@gmail.com",
                 additional_claims={
-                    "user_id": 3,  # Correspond au manageur_id dans la route
+                    "user_id": 55,  # Correspond au manageur_id dans la route
                     "role": "Manageur"
                 }
             )
         # 3. Exécution de la requête
         with self.app.app_context():
             response = self.client.post(
-                '/creation-livreur/3',  # Doit correspondre au user_id dans le token
+                '/creation-livreur/55',  # Doit correspondre au user_id dans le token
                 data=json.dumps(test_data),
                 content_type='application/json',
                 headers={'Authorization': f'Bearer {manageur_token}'}
