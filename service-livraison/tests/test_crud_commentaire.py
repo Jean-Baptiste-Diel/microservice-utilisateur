@@ -30,7 +30,7 @@ class MyTestCase(unittest.TestCase):
         print("Test création livraison - Réussi")
 
     def test_afficher_commentaire_client_livrer(self):
-        donnee_test = {'client_id': 1}
+        donnee_test = {'livraison_id': 1}
         response = self.client.get(
             '/commentaires/1',
             data=json.dumps(donnee_test),

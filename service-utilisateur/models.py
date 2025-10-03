@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from configs.config import db
 
-
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -37,7 +36,15 @@ class Client(db.Model):
     creation_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True)
 
     utilisateur = db.relationship('Utilisateur', back_populates='client')
-
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'utilisateur_id': self.utilisateur_id,
+            'lieu_livraison': self.lieu_livraison,
+            'nom': self.utilisateur.nom if self.utilisateur else None,
+            'prenom': self.utilisateur.prenom if self.utilisateur else None,
+            'email': self.utilisateur.email if self.utilisateur else None
+        }
 
 class Manageur(db.Model):
     __tablename__ = 'manageurs'
@@ -47,7 +54,11 @@ class Manageur(db.Model):
 
     utilisateur = db.relationship('Utilisateur', back_populates='manageur')
     livreurs = db.relationship('Livreur', back_populates='manageur')
-
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'utilisateur_id': self.utilisateur_id,
+        }
 
 class Livreur(db.Model):
     __tablename__ = 'livreurs'

@@ -79,7 +79,6 @@ class StatistiquesApiTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data["livreur_id"], 1)
         self.assertEqual(data["nombre_commentaires"], 3)
-        # moyenne = 2/3
         self.assertAlmostEqual(data["moyenne_evaluation"], 2/3, places=5)
         self.assertIsNotNone(data["derniere_mise_a_jour"])
 

@@ -9,6 +9,7 @@ from services.service_manageur import afficher_livreurs, afficher_livreur, reche
 
 manageur_bp = Blueprint('manageur_bp', __name__)
 
+erreur = "Erreur serveur"
 @manageur_bp.route('/creation-manageur', methods=["POST"])
 @jwt_required()
 def creation_manageur_route():
@@ -45,7 +46,7 @@ def creation_livreur_route():
 
         return creation_livreur(manageur_id, donnees)
     except Exception as e:
-        return jsonify({"message": "Erreur serveur",
+        return jsonify({"message": erreur,
                         "details": e}), 500
 
 @manageur_bp.route('/livreurs', methods=["GET"])
@@ -53,10 +54,8 @@ def creation_livreur_route():
 def afficher_livreurs_route():
     auth_header = request.headers.get("Authorization")
     print("🔑 Header Authorization reçu :", auth_header)
-
     if not auth_header:
         return jsonify({"message": "Header Authorization manquant"}), 401
-
     try:
         verify_jwt_in_request()  # Vérifie la présence et validité du token
         identity_str = get_jwt_identity()  # Récupère la string
@@ -67,25 +66,38 @@ def afficher_livreurs_route():
             return jsonify({"error": "Action non autorisée"}), 403
 
         manageur_id = user.get("id")
-
+        print(manageur_id)
         # NE PAS FAIRE jsonify si afficher_livreurs renvoie déjà un Response
         return afficher_livreurs(manageur_id)
 
     except Exception as e:
         print("❌ Erreur :", e)
-        return jsonify({"message": "Erreur serveur", "details": str(e)}), 500
+        return jsonify({"message": erreur,
+                        "details": str(e)}), 500
 
 
 @manageur_bp.route('/livreur', methods=["GET"])
 @jwt_required()
-def afficher_livreur_route(manageur_id, livreur_id):
+def afficher_livreur_route():
+    auth_header = request.headers.get("Authorization")
+    print("🔑 Header Authorization reçu :", auth_header)
+
+    if not auth_header:
+        return jsonify({"message": "Header Authorization manquant"}), 401
     try:
-        claims = get_jwt()
-        if claims.get('role') != 'Manageur' or claims.get('user_id') != manageur_id:
+        verify_jwt_in_request()  # Vérifie la présence et validité du token
+        identity_str = get_jwt_identity()  # Récupère la string
+        user = json.loads(identity_str)  # Transforme en dict
+        print("📝 Payload JWT :", user)
+
+        if user.get("role") != "Manageur":
             return jsonify({"error": "Action non autorisée"}), 403
+
+        livreur_id = user.get("livreur_id")
+        manageur_id = user.get("id")
         return afficher_livreur(livreur_id)
     except Exception as e:
-        return jsonify({"message": "Erreur serveur",
+        return jsonify({"message": erreur,
                         "details": e}), 500
 
 @manageur_bp.route('/research', methods=["GET"])
@@ -98,7 +110,7 @@ def search_livreur_route(manageur_id):
         terme = request.args.get("q", "")
         return rechercher_livreur(terme)
     except Exception as e:
-        return jsonify({"message": "Erreur serveur",
+        return jsonify({"message": erreur,
                         "details": e}), 500
 
 @manageur_bp.route('/bloquer', methods=["POST"])

@@ -13,11 +13,6 @@ def seed_database():
         # IDs factices pour clients et livreurs (simuler les IDs du service utilisateur)
         client_ids = [1, 2, 3]  # IDs factices de clients
         livreur_ids = [1, 2, 3]  # IDs factices de livreurs
-        livreur_noms = {
-            1: "Luc Bernard",
-            2: "Sophie Petit",
-            3: "Jean Robert"
-        }
 
         livraisons = []
         matricule_counter = 1000
@@ -38,7 +33,7 @@ def seed_database():
         ]
 
         # Créer des livraisons
-        for i in range(20):  # 20 livraisons au total
+        for _ in range(20):  # 20 livraisons au total
             client_id = random.choice(client_ids)
             livreur_id = random.choice(livreur_ids)
 

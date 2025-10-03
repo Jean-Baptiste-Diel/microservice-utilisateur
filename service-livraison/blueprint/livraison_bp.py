@@ -18,7 +18,6 @@ def afficher_livraison_route():
 
     if not auth_header:
         return jsonify({"message": "Header Authorization manquant"}), 401
-
     try:
         verify_jwt_in_request()
         user_str = get_jwt_identity()  # Transforme en dict
@@ -26,13 +25,17 @@ def afficher_livraison_route():
         user = json.loads(user_str)
         print("📝 Payload JWT :", user)
 
-        if user.get("role") != "Client":
+        if user.get("role") != "Client" and user.get("role") != "Livreur":
             return jsonify({"error": "Action non autorisée"}), 403
 
-        client_id = user.get("id")
-        #client_id = 1
-        livraisons = afficher_livraison(client_id)
-        return livraisons
+        client_id = user.get("client_id")
+        livreur_id = user.get("livreur_id")
+        if client_id:
+            livraisons = afficher_livraison(client_id=client_id)
+            return livraisons
+        if livreur_id:
+            livraisons = afficher_livraison(livreur_id=livreur_id)
+            return livraisons
     except Exception as e:
         print("❌ Erreur :", e)
         return jsonify({"message": "Erreur serveur", "details": str(e)}), 500

@@ -29,6 +29,7 @@ def supprimer_route(utilisateur_id):
         return jsonify({"message": str(e)}), 500
 
 @auth_bp.route('/modifier/<int:id_utilisateur>', methods=["POST"])
+@jwt_required()
 def modifier_route(id_utilisateur=None):
     modifier = mettre_a_jour_utilisateur(id_utilisateur)
     return modifier
