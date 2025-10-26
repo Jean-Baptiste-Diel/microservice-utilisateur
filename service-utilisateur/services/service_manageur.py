@@ -54,3 +54,12 @@ def afficher_livreurs(manageur_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"message": str(e)}), 500
+
+
+def afficher_livreurs1():
+    try:
+        manageurs = Manageur.query.all()
+        return jsonify([manageur.to_dict() for manageur in manageurs]), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500

@@ -10,31 +10,39 @@ def creer_livraison_route():
     creer_livraison = ajouter_livraison()
     return creer_livraison
 
-@livraison_bp.route('/livraison', methods=['GET'])
+
+@livraison_bp.route('/livraisons', methods=['GET'])
 @jwt_required()
 def afficher_livraison_route():
+    """
+    Recuper et afficher toutes les livraison
+    (pour les clients et les liveurs et manageurs
+    sur le serveur
+    :return: livraisons
+    """
     auth_header = request.headers.get("Authorization")
-    print("🔑 Header Authorization reçu :", auth_header)
-
+    #print("🔑 Header Authorization reçu :", auth_header)
     if not auth_header:
         return jsonify({"message": "Header Authorization manquant"}), 401
     try:
         verify_jwt_in_request()
-        user_str = get_jwt_identity()  # Transforme en dict
-        print(user_str)
+        user_str = get_jwt_identity()
         user = json.loads(user_str)
-        print("📝 Payload JWT :", user)
-
+        #print("📝 Payload JWT :", user)
         if user.get("role") != "Client" and user.get("role") != "Livreur":
             return jsonify({"error": "Action non autorisée"}), 403
 
         client_id = user.get("client_id")
         livreur_id = user.get("livreur_id")
+        manageur_id = user.get("manageur_id")
         if client_id:
             livraisons = afficher_livraison(client_id=client_id)
             return livraisons
         if livreur_id:
             livraisons = afficher_livraison(livreur_id=livreur_id)
+            return livraisons
+        if manageur_id:
+            livraisons = afficher_livraison(manageur_id=manageur_id)
             return livraisons
     except Exception as e:
         print("❌ Erreur :", e)

@@ -6,9 +6,11 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt
 
+
 # Import des blueprints
 from blueprint.auth_bp import auth_bp
 from blueprint.client_bp import client_bp
+from blueprint.livreur_bp import livreur_bp
 from blueprint.manageur_bp import manageur_bp
 from configs.config import db
 from seeders.seed_roles import seed_database
@@ -64,6 +66,7 @@ def creation_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(client_bp)
     app.register_blueprint(manageur_bp)
+    app.register_blueprint(livreur_bp)
 
     # ✅ Routes santé
     @app.route('/health')

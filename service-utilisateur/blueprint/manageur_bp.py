@@ -5,7 +5,8 @@ from flask_jwt_extended import verify_jwt_in_request,jwt_required, get_jwt, get_
 
 from services.crud.crud_livreur import creation_livreur
 from services.crud.crud_manageur import creation_manageur
-from services.service_manageur import afficher_livreurs, afficher_livreur, rechercher_livreur, bloquer_livreur
+from services.service_manageur import afficher_livreurs, afficher_livreur, rechercher_livreur, bloquer_livreur, \
+    afficher_livreurs1
 
 manageur_bp = Blueprint('manageur_bp', __name__)
 
@@ -30,7 +31,6 @@ def creation_livreur_route():
 
     if not auth_header:
         return jsonify({"message": "Header Authorization manquant"}), 401
-
     try:
         verify_jwt_in_request()  # Vérifie la présence et validité du token
         identity_str = get_jwt_identity()  # Récupère la string
@@ -49,6 +49,9 @@ def creation_livreur_route():
         return jsonify({"message": erreur,
                         "details": e}), 500
 
+@manageur_bp.route('/livreurs1', methods=["GET"])
+def afficher_all_livreurs():
+    return afficher_livreurs1()
 @manageur_bp.route('/livreurs', methods=["GET"])
 @jwt_required()
 def afficher_livreurs_route():

@@ -42,3 +42,35 @@ def creation_client():
         return jsonify({
             "message": "Erreur de base de données",
             "details": str(e)}), 500
+
+def info_client(client_id):
+    """
+    Récupère les informations d'un client par son ID
+    Le token JWT doit être fourni dans le header Authorization
+    """
+    try:
+        # Rechercher l'utilisateur
+        client = Client.query.filter_by(id=client_id).first()
+        if not client:
+            return jsonify({"message": "Utilisateur introuvable"}), 404
+
+        # Construire la réponse
+        utilisateur = client.utilisateur
+        if not utilisateur:
+            return jsonify({"message": "Utilisateur introuvable pour ce client"}), 404
+
+        response = {
+            "id": utilisateur.id,
+            "email": utilisateur.email,
+            "nom": utilisateur.nom,
+            "prenom": utilisateur.prenom,
+            "role": utilisateur.role.nom_du_role,
+            "client_id": client.id,
+        }
+
+        print(f"Utilisateur trouvé : {response}")
+        return jsonify(response), 200
+
+    except Exception as e:
+        print("Erreur :", e)
+        return jsonify({"message": "Erreur lors de la récupération de l'utilisateur"}), 500

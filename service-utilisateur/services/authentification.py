@@ -28,8 +28,9 @@ def connexion():
             # 🔥 Si c’est un client, ajouter ses infos Client
             if utilisateur.role.nom_du_role == "Client" and utilisateur.client:
                 payload["client_id"] = utilisateur.client.id
+                payload["nom"] = utilisateur.nom
+                payload["prenom"] = utilisateur.prenom
                 payload["lieu_livraison"] = utilisateur.client.lieu_livraison
-
             # 🔥 Si c’est un manageur, ajouter ses infos Manageur
             if utilisateur.role.nom_du_role == "Manageur" and utilisateur.manageur:
                 payload["manageur_id"] = utilisateur.manageur.id
@@ -44,11 +45,22 @@ def connexion():
             # ✅ Réponse plus claire
             response = {
                 "message": "Identifiant valide",
-                "access_token": access_token,  # <-- standard
+                "access_token": access_token,
                 "utilisateur": {
                     "id": utilisateur.id,
                     "email": utilisateur.email,
-                    "role": utilisateur.role.nom_du_role
+                    "role": utilisateur.role.nom_du_role,
+                    "nom": utilisateur.nom,
+                    "prenom": utilisateur.prenom,
+                    # si client : infos supplémentaires
+                    **({"client_id": utilisateur.client.id, "utilisateur_id": utilisateur.client.utilisateur_id,
+                        "lieu_livraison": utilisateur.client.lieu_livraison} if utilisateur.role.nom_du_role == "Client" and utilisateur.client else {}),
+                    # si manageur : infos supplémentaires
+                    **({
+                           "manageur_id": utilisateur.manageur.id} if utilisateur.role.nom_du_role == "Manageur" and utilisateur.manageur else {}),
+                    # si livreur : infos supplémentaires
+                    **({"livreur_id": utilisateur.livreur.id,
+                        "manageur_id": utilisateur.livreur.manageur_id} if utilisateur.role.nom_du_role == "Livreur" and utilisateur.livreur else {})
                 }
             }
             return jsonify(response), 200
