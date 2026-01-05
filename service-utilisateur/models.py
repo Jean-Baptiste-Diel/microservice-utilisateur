@@ -26,7 +26,12 @@ class Utilisateur(db.Model):
     client = db.relationship('Client', back_populates='utilisateur', uselist=False, cascade='all, delete-orphan')
     manageur = db.relationship('Manageur', back_populates='utilisateur', uselist=False, cascade='all, delete-orphan')
     livreur = db.relationship('Livreur', back_populates='utilisateur', uselist=False, cascade='all, delete-orphan')
-
+    def to_dict(self    ):
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "status": self.status,
+        }
 
 class Client(db.Model):
     __tablename__ = 'clients'
@@ -77,5 +82,6 @@ class Livreur(db.Model):
             'manageur_id': self.manageur_id,
             'nom': self.utilisateur.nom if self.utilisateur else None,
             'prenom': self.utilisateur.prenom if self.utilisateur else None,
-            'email': self.utilisateur.email if self.utilisateur else None
+            'email': self.utilisateur.email if self.utilisateur else None,
+            'status': self.utilisateur.status if self.utilisateur else None
         }

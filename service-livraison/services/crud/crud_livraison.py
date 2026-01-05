@@ -48,3 +48,15 @@ def afficher_livraison(client_id=None, livreur_id=None, manageur_id=None):
         db.session.rollback()
         print("❌ Erreur SQLAlchemy :", str(e))
         return jsonify({'erreur': str(e)}), 400
+
+def valider_livraison(id):
+    # Récupérer la livraison
+    livraison = Livraison.query.get(id)
+    if not livraison:
+        return jsonify({'error': 'livraison non trouvée'}), 404
+    livraison.status = "livrée"
+    db.session.commit()
+    return jsonify({
+        'id': livraison.id,
+        'status': livraison.status
+    }), 200

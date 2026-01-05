@@ -112,3 +112,27 @@ def livraisons_completes1():
             "message": "Erreur de communication avec le microservice",
             "details": str(e)
         }), 500
+
+@livraison_bp.route("/valider-livraison/<int:id>", methods=['PATCH'])
+def valider_livraison(id):
+    """
+    Route pour recuperer les information complete
+    d'une livraison pour l'afficher chez le client
+    :return: livraisons json
+    """
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"message": "Token manquant"}), 401
+    try:
+        # information livreur a afficher cher le client
+        user_resp = requests.patch(f"{URL_SERVICE_LIVRAISON}/valider-livraison/{id}",
+                                    headers={"Authorization": token},
+                                    json={})
+        print(f"Status code ", user_resp.status_code)
+        print(f"Réponse ", user_resp.text)
+        return jsonify("livraison valider")
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "message": "Erreur de communication avec le microservice",
+            "details": str(e)
+        }), 500

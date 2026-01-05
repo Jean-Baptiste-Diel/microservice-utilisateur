@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, json
 from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt_identity
 
-from services.crud.crud_livraison import ajouter_livraison, afficher_livraison
+from services.crud.crud_livraison import ajouter_livraison, afficher_livraison, valider_livraison
 
 livraison_bp = Blueprint('livraison_bp', __name__)
 
@@ -47,3 +47,23 @@ def afficher_livraison_route():
     except Exception as e:
         print("❌ Erreur :", e)
         return jsonify({"message": "Erreur serveur", "details": str(e)}), 500
+@livraison_bp.route('/valider-livraison/<int:id>', methods=['PATCH'])
+@jwt_required()
+def valider_livraison_route(id):
+    auth_header = request.headers.get("Authorization")
+    # print("🔑 Header Authorization reçu :", auth_header)
+    if not auth_header:
+        return jsonify({"message": "Header Authorization manquant"}), 401
+    try:
+        verify_jwt_in_request()
+        user_str = get_jwt_identity()
+        user = json.loads(user_str)
+        # print("📝 Payload JWT :", user)
+        if user.get("role") != "Livreur":
+            return jsonify({"error": "Action non autorisée"}), 403
+        livraisons = valider_livraison(id = id)
+        return livraisons
+    except Exception as e:
+        print("❌ Erreur :", e)
+        return jsonify({"message": "Erreur serveur", "details": str(e)}), 500
+

@@ -43,7 +43,7 @@ def modifier_commentaire_route(id):
     except Exception as e:
         print("❌ Erreur :", e)
         return jsonify({"message": "Erreur serveur", "details": str(e)}), 500
-@commentaire_bp.route('/supprimer/<int:id>', methods=['POST'])
+@commentaire_bp.route('/supprimer/<int:id>', methods=['PATCH'])
 def supprimer_commentaire_route(id):
     supprimer = crud_commentaire.archiver_commentaire(id)
     return supprimer

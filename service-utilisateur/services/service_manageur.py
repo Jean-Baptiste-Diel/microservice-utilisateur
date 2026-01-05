@@ -6,14 +6,17 @@ from models import Livreur, Utilisateur, Manageur
 
 
 # Changer le statut du livreur
-def bloquer_livreur(utilisateur_id):
+def bloquer_livreur(livreur_id):
+    print(livreur_id)
     try:
-        utilateur = Utilisateur.query.get(utilisateur_id)
-        if utilateur is None:
+        utilisateur = Utilisateur.query.get(livreur_id)
+        if utilisateur is None:
             return jsonify({"message": "Livreur introuvable"}), 400
-        Utilisateur.status = 'ARCHIVER'
+        utilisateur.status = 'ARCHIVER'
         db.session.commit()
-        return jsonify({"livreur": utilateur})
+        return jsonify({"livreur": utilisateur.id,
+                        "nom": utilisateur.nom,
+                        "status": utilisateur.status}),200
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"message": str(e)}), 500

@@ -56,23 +56,18 @@ def afficher_all_livreurs():
 @jwt_required()
 def afficher_livreurs_route():
     auth_header = request.headers.get("Authorization")
-    print("🔑 Header Authorization reçu :", auth_header)
     if not auth_header:
         return jsonify({"message": "Header Authorization manquant"}), 401
     try:
         verify_jwt_in_request()  # Vérifie la présence et validité du token
         identity_str = get_jwt_identity()  # Récupère la string
-        user = json.loads(identity_str)  # Transforme en dict
-        print("📝 Payload JWT :", user)
-
+        user = json.loads(identity_str)
         if user.get("role") != "Manageur":
             return jsonify({"error": "Action non autorisée"}), 403
 
         manageur_id = user.get("id")
-        print(manageur_id)
         # NE PAS FAIRE jsonify si afficher_livreurs renvoie déjà un Response
         return afficher_livreurs(manageur_id)
-
     except Exception as e:
         print("❌ Erreur :", e)
         return jsonify({"message": erreur,
@@ -90,8 +85,7 @@ def afficher_livreur_route():
     try:
         verify_jwt_in_request()  # Vérifie la présence et validité du token
         identity_str = get_jwt_identity()  # Récupère la string
-        user = json.loads(identity_str)  # Transforme en dict
-        print("📝 Payload JWT :", user)
+        user = json.loads(identity_str)
 
         if user.get("role") != "Manageur":
             return jsonify({"error": "Action non autorisée"}), 403
@@ -116,14 +110,20 @@ def search_livreur_route(manageur_id):
         return jsonify({"message": erreur,
                         "details": e}), 500
 
-@manageur_bp.route('/bloquer', methods=["POST"])
+@manageur_bp.route('/bloquer/<int:livreur_id>', methods=["PATCH"])
 @jwt_required()
-def bloquer_route(manageur_id, utilisateur_id):
+def bloquer_route(livreur_id):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"message": "Header Authorization manquant"}), 401
     try:
-        claims = get_jwt()
-        if claims.get('role') != 'Manageur' or claims.get('user_id') != manageur_id:
+        verify_jwt_in_request()
+        identity_str = get_jwt_identity()
+        user = json.loads(identity_str)
+        if user.get("role") != "Manageur":
             return jsonify({"error": "Action non autorisée"}), 403
-        return bloquer_livreur(utilisateur_id)
+        bloquer = bloquer_livreur(livreur_id)
+        return bloquer
     except Exception as e:
         return jsonify({"message": "Erreur serveur",
                         "details": e}), 500

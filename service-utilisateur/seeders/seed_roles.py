@@ -30,9 +30,6 @@ def seed_database():
             db.session.add(role)
 
         db.session.commit()
-        print("Rôles créés avec succès!")
-    else:
-        print("Les rôles existent déjà.")
 
     # Vérifier si les utilisateurs existent déjà
     if Utilisateur.query.count() == 0:
@@ -131,14 +128,9 @@ def seed_database():
             db.session.add(utilisateur)
 
         db.session.commit()
-        print("Utilisateurs créés avec succès!")
-    else:
-        print("Les utilisateurs existent déjà.")
 
     # Vérifier si les manageurs existent déjà
     if Manageur.query.count() == 0:
-        print("Création des manageurs...")
-
         # Récupérer les utilisateurs manageurs
         marie = Utilisateur.query.filter_by(email="marie.dupont@example.com").first()
         pierre = Utilisateur.query.filter_by(email="pierre.martin@example.com").first()
@@ -153,13 +145,9 @@ def seed_database():
             db.session.add(manageur)
 
         db.session.commit()
-        print("Manageurs créés avec succès!")
-    else:
-        print("Les manageurs existent déjà.")
 
     # Vérifier si les livreurs existent déjà
     if Livreur.query.count() == 0:
-        print("Création des livreurs...")
 
         # Récupérer les utilisateurs livreurs et manageurs
         luc = Utilisateur.query.filter_by(email="luc.bernard@example.com").first()
@@ -181,9 +169,6 @@ def seed_database():
             db.session.add(livreur)
 
         db.session.commit()
-        print("Livreurs créés avec succès!")
-    else:
-        print("Les livreurs existent déjà.")
 
     # Vérifier si les clients existent déjà
     if Client.query.count() == 0:
@@ -205,8 +190,3 @@ def seed_database():
             db.session.add(client)
 
         db.session.commit()
-        print("Clients créés avec succès!")
-    else:
-        print("Les clients existent déjà.")
-
-    print("Seeder exécuté avec succès!")
