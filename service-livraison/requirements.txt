@@ -1,0 +1,18 @@
+flask-cors
+python-dotenv
+flask-jwt-extended~=4.7.1
+# Core
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg2-binary
+
+# Verrous de compatibilité ORM/Migrations
+SQLAlchemy
+alembic
+typing_extensions
+
+# Autres
+requests
+tensorflow
+nltk

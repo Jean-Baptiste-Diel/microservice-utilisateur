@@ -1,0 +1,12 @@
+# installation des dependances
+pip install -r requirements.txt
+
+
+# Reconstruire et redémarrer UN service
+docker-compose up --build -d service-utilisateur
+docker-compose up --build -d service-livraison
+
+
+# Rebuild sans cache pour forcer la réinstallation
+docker-compose build --no-cache service-utilisateur
+docker-compose up -d service-utilisateur
